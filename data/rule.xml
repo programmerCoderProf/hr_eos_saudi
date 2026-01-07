@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+        <record id="rule_category_eos" model="hr.salary.rule.category">
+            <field name="name">End-of-service benefits</field>
+            <field name="code">EOSB</field>
+        </record>
+        <record id="rule_end_service" model="hr.salary.rule">
+            <field name="name">End of Service</field>
+            <field name="code">EOS</field>
+            <field name="category_id" ref="rule_category_eos" />
+            <field name="struct_id" ref="hr_payroll.structure_002" />
+            <field name="appears_on_payslip">True</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result =employee.work_permit_expiration_date and
+                employee.work_permit_expiration_date > payslip.date_from</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                days = (employee.work_permit_expiration_date - employee.first_contract_date).days +
+                1
+                salary = contract.wage or 0.0
+                result = (1825/365 * 0.5 * salary) + ((days-1825)/365 * salary) if days >= 1825 else
+                (days/365)*0.5 * salary
+            </field>
+        </record>
+    </data>
+</odoo>
